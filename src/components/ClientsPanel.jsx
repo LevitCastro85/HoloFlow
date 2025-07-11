@@ -64,7 +64,14 @@ export default function ClientsPanel() {
       setEditingClient(null);
       toast({ title: "Éxito", description: `Cliente ${clientData.id ? 'actualizado' : 'creado'} correctamente.` });
     } catch (error) {
-      toast({ title: "Error", description: "No se pudo guardar el cliente.", variant: "destructive" });
+      const { message, code, details } = error || {};
+      const fullMessage =
+        message ||
+        [code, details]
+          .filter(Boolean)
+          .join(' ') ||
+        "No se pudo guardar el cliente.";
+      toast({ title: "Error", description: fullMessage, variant: "destructive" });
     }
   };
 
