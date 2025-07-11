@@ -88,7 +88,23 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
       }, [toast]);
 
       const handleSession = useCallback(async (newSession) => {
+        console.log('[Auth] handleSession invoked:', newSession);
         if (newSession?.access_token === session?.access_token) {
+          console.log('[Auth] Session token unchanged');
+          if (!newSession) {
+            setLoading(false);
+            setLoadingProfile(false);
+          }
+          return;
+        }
+
+        if (!newSession) {
+          console.log('[Auth] No active session');
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+          setLoadingProfile(false);
           return;
         }
 
@@ -161,11 +177,13 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 
       useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
+          console.log('[Auth] Initial session:', session);
           handleSession(session);
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
           (event, session) => {
+            console.log('[Auth] Auth state change:', event, session);
             handleSession(session);
           }
         );
