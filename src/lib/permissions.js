@@ -7,6 +7,13 @@ export const ROLES = {
   FREELANCE: 'Freelance',
 };
 
+export const ROLE_ID_MAP = {
+  [ROLES.DIRECTOR]: 1,
+  [ROLES.ADMINISTRADOR]: 2,
+  [ROLES.OPERADOR]: 3,
+  [ROLES.FREELANCE]: 4,
+};
+
 export const permissions = {
   [ROLES.DIRECTOR]: {
     canManageUsers: true,

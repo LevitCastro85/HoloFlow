@@ -106,10 +106,18 @@ import { supabase } from '@/lib/customSupabaseClient';
         if (error) throw error;
       },
 
-      async sendPasswordReset(email) {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}`,
-        });
-        if (error) throw error;
-      }
-    };
+        async sendPasswordReset(email) {
+          const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}`,
+          });
+          if (error) throw error;
+        },
+
+        async assignRole(collaboratorId, roleId) {
+          const { error } = await supabase.rpc('assign_role_to_collaborator', {
+            collaborator_id: collaboratorId,
+            role_id: roleId,
+          });
+          if (error) throw error;
+        }
+      };
