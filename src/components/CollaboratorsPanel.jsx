@@ -115,30 +115,37 @@ import React, { useState, useEffect } from 'react';
         setShowModal(true);
       };
 
-      const handleSaveCollaborator = async (collaboratorData) => {
-        try {
-          if (editingCollaborator) {
-            if (profile && editingCollaborator.user_id === profile.user_id) {
-              await collaboratorsService.updateCurrentUserProfile(collaboratorData);
-              toast({ title: "Perfil actualizado", description: "Tus datos se han actualizado correctamente" });
-            } else {
-              await collaboratorsService.update(editingCollaborator.id, collaboratorData);
-              toast({ title: "Colaborador actualizado", description: "Los datos se han actualizado correctamente" });
-            }
-          } else {
-            await collaboratorsService.create(collaboratorData);
-            toast({ title: "Invitación Enviada", description: "Se ha enviado una invitación por correo al nuevo colaborador." });
-          }
-          setShowModal(false);
-          loadCollaborators();
-        } catch (error) {
-          toast({
-            title: "Error al guardar",
-            description: error.message || "No se pudo guardar la información.",
-            variant: "destructive"
-          });
-        }
-      };
+      const handleSaveCollaborator = async (collaboratorData, roleId) => {
+  try {
+    let saved;
+    if (editingCollaborator) {
+      if (profile && editingCollaborator.user_id === profile.user_id) {
+        saved = await collaboratorsService.updateCurrentUserProfile(collaboratorData);
+        toast({ title: "Perfil actualizado", description: "Tus datos se han actualizado correctamente" });
+      } else {
+        saved = await collaboratorsService.update(editingCollaborator.id, collaboratorData);
+        toast({ title: "Colaborador actualizado", description: "Los datos se han actualizado correctamente" });
+      }
+    } else {
+      saved = await collaboratorsService.create(collaboratorData);
+      toast({ title: "Invitación Enviada", description: "Se ha enviado una invitación por correo al nuevo colaborador." });
+    }
+
+    const collaboratorId = editingCollaborator ? editingCollaborator.id : saved?.id || saved?.collaborator_id || saved?.collaboratorId;
+    if (collaboratorId && roleId) {
+      await collaboratorsService.assignRole(collaboratorId, roleId);
+    }
+
+    setShowModal(false);
+    loadCollaborators();
+  } catch (error) {
+    toast({
+      title: "Error al guardar",
+      description: error.message || "No se pudo guardar la información.",
+      variant: "destructive",
+    });
+  }
+};
 
       const handleCollaboratorAction = (action, collaboratorId) => {
         toast({

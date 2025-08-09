@@ -1,6 +1,6 @@
 import React from 'react';
 import { User, Mail, Phone, MapPin, Camera, Shield } from 'lucide-react';
-import { ROLES } from '@/lib/permissions';
+import { ROLE_ID_MAP } from '@/lib/permissions';
 
 const availabilityOptions = [
   { value: 'disponible', label: 'Disponible' },
@@ -106,17 +106,17 @@ export default function CollaboratorFormFields({ formData, errors, onInputChange
                 <Shield className="w-4 h-4 inline mr-1" />
                 Rol de Usuario *
             </label>
-            <select
-                name="role"
-                value={formData.role}
-                onChange={onInputChange}
-                onBlur={onBlur}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-                {Object.values(ROLES).map(role => (
-                    <option key={role} value={role}>{role}</option>
-                ))}
-            </select>
+              <select
+                  name="role_id"
+                  value={formData.role_id}
+                  onChange={onInputChange}
+                  onBlur={onBlur}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                  {Object.entries(ROLE_ID_MAP).map(([label, id]) => (
+                      <option key={id} value={id}>{label}</option>
+                  ))}
+              </select>
             <p className="text-xs text-gray-500 mt-1">
               Define los permisos de acceso del usuario en la plataforma.
             </p>

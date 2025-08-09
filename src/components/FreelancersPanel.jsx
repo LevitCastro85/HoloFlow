@@ -134,33 +134,39 @@ export default function FreelancersPanel() {
     setShowModal(true);
   };
 
-  const handleSaveCollaborator = async (collaboratorData) => {
-    try {
-      if (editingCollaborator) {
-        await collaboratorsService.update(editingCollaborator.id, collaboratorData);
-        toast({
-          title: "Colaborador actualizado",
-          description: "Los datos se han actualizado correctamente"
-        });
-      } else {
-        await collaboratorsService.create(collaboratorData);
-        toast({
-          title: "Colaborador registrado",
-          description: "El nuevo colaborador se ha agregado al equipo"
-        });
-      }
-      
-      setShowModal(false);
-      setEditingCollaborator(null);
-      loadCollaborators();
-    } catch (error) {
+  const handleSaveCollaborator = async (collaboratorData, roleId) => {
+  try {
+    let saved;
+    if (editingCollaborator) {
+      saved = await collaboratorsService.update(editingCollaborator.id, collaboratorData);
       toast({
-        title: "Error al guardar",
-        description: "No se pudo guardar la información del colaborador",
-        variant: "destructive"
+        title: "Colaborador actualizado",
+        description: "Los datos se han actualizado correctamente"
+      });
+    } else {
+      saved = await collaboratorsService.create(collaboratorData);
+      toast({
+        title: "Colaborador registrado",
+        description: "El nuevo colaborador se ha agregado al equipo"
       });
     }
-  };
+
+    const collaboratorId = editingCollaborator ? editingCollaborator.id : saved?.id || saved?.collaborator_id || saved?.collaboratorId;
+    if (collaboratorId && roleId) {
+      await collaboratorsService.assignRole(collaboratorId, roleId);
+    }
+
+    setShowModal(false);
+    setEditingCollaborator(null);
+    loadCollaborators();
+  } catch (error) {
+    toast({
+      title: "Error al guardar",
+      description: "No se pudo guardar la información del colaborador",
+      variant: "destructive",
+    });
+  }
+};
 
   const handleCollaboratorAction = (action, collaboratorId) => {
     toast({

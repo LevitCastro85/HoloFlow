@@ -7,7 +7,7 @@ import CollaboratorFormFields from '@/components/collaborator/form/CollaboratorF
 import InternalCollaboratorFields from '@/components/collaborator/form/InternalCollaboratorFields';
 import FreelancerFields from '@/components/collaborator/form/FreelancerFields';
 import FormActions from '@/components/collaborator/form/FormActions';
-import { ROLES } from '@/lib/permissions';
+import { ROLES, ROLE_ID_MAP } from '@/lib/permissions';
 
 const getInitialFormData = (collaborator) => ({
   name: collaborator?.name || '',
@@ -24,8 +24,8 @@ const getInitialFormData = (collaborator) => ({
   rating: collaborator?.rating || 5.0,
   notes: collaborator?.notes || '',
   is_active: collaborator?.is_active ?? true,
-  role: collaborator?.role || ROLES.FREELANCE,
-});
+    role_id: collaborator?.role_id || ROLE_ID_MAP[collaborator?.role] || ROLE_ID_MAP[ROLES.FREELANCE],
+  });
 
 export default function CollaboratorModal({ show, onClose, collaborator, onSave }) {
   const [formData, setFormData] = useState(getInitialFormData(null));
@@ -89,7 +89,8 @@ export default function CollaboratorModal({ show, onClose, collaborator, onSave 
 
     setSaving(true);
     try {
-      await onSave(formData);
+        const { role_id, ...payload } = formData;
+        await onSave(payload, role_id ? parseInt(role_id, 10) : undefined);
     } catch (error) {
        toast({
         title: "Error al guardar",
